@@ -14,7 +14,7 @@ import { useState } from "react";
 import FormLabel from "react-bootstrap/esm/FormLabel";
 import { useEffect } from "react";
 function App() {
-  const server = "https://kalenteri-v4.onrender.com;
+  const server = "https://kalenteri-v4.onrender.com";
   const [isLoggedIn, setisLoggedIn] = useState(false);
   const [error, setError] = useState(false);
   const [calendars, setCalendars] = useState(false);
