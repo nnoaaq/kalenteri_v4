@@ -9,13 +9,51 @@ async function convertBufferToText(buffer) {
   return text;
 }
 function convertMinutesToUTC(date, timeMinutes) {
-  const [day, month, year] = date.split(".").map(Number);
+  const [day, month, year] = dateStr.split(".").map(Number);
+
+  // Oletetaan, että convertMinutesToTime palauttaa esim. "14:30"
   const [hour, minute] = convertMinutesToTime(timeMinutes)
     .split(":")
     .map(Number);
-  const dateObj = new Date(Date.UTC(year, month - 1, day, hour, minute));
-  const timezoneOffset = -dateObj.getTimezoneOffset();
-  return `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1).toString().padStart(2, "0")}-${dateObj.getDate().toString().padStart(2, "0")}T${dateObj.getHours().toString().padStart(2, "0")}:${dateObj.getMinutes().toString().padStart(2, "0")}:00+${(timezoneOffset / 60).toString().padStart(2, "0")}:00`;
+
+  // 1. Luodaan päivämäärämerkkijonosta ISO-formaatin mukainen (Suomen ajassa)
+  // Esimerkiksi: "2026-07-03T14:30:00"
+  const localIsoStr = `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}T${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}:00`;
+
+  // 2. Pakotetaan tulkinta Suomen aikavyöhykkeelle (Europe/Helsinki)
+  // Tämä ottaa automaattisesti huomioon kesä- ja talviajan (DST) kyseisenä päivänä!
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Helsinki",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+
+  // Luodaan päivämääräolio ja korjataan se Suomen aikaan
+  const dateObj = new Date(localIsoStr);
+
+  // Koska halutaan kertoa että syötetty aika oli nimenomaan Suomen aikaa,
+  // lasketaan ero UTC-aikaan:
+  const tzDate = new Date(
+    dateObj.toLocaleString("en-US", { timeZone: "Europe/Helsinki" }),
+  );
+  const diff = tzDate.getTime() - dateObj.getTime();
+
+  // Luodaan lopullinen UTC-olio vähentämällä aikaero
+  const utcDate = new Date(dateObj.getTime() - diff);
+
+  return utcDate.toISOString();
+  // const [day, month, year] = date.split(".").map(Number);
+  // const [hour, minute] = convertMinutesToTime(timeMinutes)
+  //   .split(":")
+  //   .map(Number);
+  // const dateObj = new Date(year, month - 1, day, hour, minute);
+  // const timezoneOffset = -dateObj.getTimezoneOffset();
+  // return `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1).toString().padStart(2, "0")}-${dateObj.getDate().toString().padStart(2, "0")}T${dateObj.getHours().toString().padStart(2, "0")}:${dateObj.getMinutes().toString().padStart(2, "0")}:00+${(timezoneOffset / 60).toString().padStart(2, "0")}:00`;
 }
 function convertStartTimeToDate(start) {
   const startDate = new Date(start);
