@@ -9,7 +9,7 @@ async function convertBufferToText(buffer) {
   return text;
 }
 function convertMinutesToUTC(date, timeMinutes) {
-  const [day, month, year] = dateStr.split(".").map(Number);
+  const [day, month, year] = date.split(".").map(Number);
 
   // Oletetaan, että convertMinutesToTime palauttaa esim. "14:30"
   const [hour, minute] = convertMinutesToTime(timeMinutes)
