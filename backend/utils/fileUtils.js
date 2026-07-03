@@ -13,7 +13,7 @@ function convertMinutesToUTC(date, timeMinutes) {
   const [hour, minute] = convertMinutesToTime(timeMinutes)
     .split(":")
     .map(Number);
-  const dateObj = new Date(year, month - 1, day, hour, minute);
+  const dateObj = new Date(Date.UTC(year, month - 1, day, hour, minute));
   const timezoneOffset = -dateObj.getTimezoneOffset();
   return `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1).toString().padStart(2, "0")}-${dateObj.getDate().toString().padStart(2, "0")}T${dateObj.getHours().toString().padStart(2, "0")}:${dateObj.getMinutes().toString().padStart(2, "0")}:00+${(timezoneOffset / 60).toString().padStart(2, "0")}:00`;
 }
