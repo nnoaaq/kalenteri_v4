@@ -14,21 +14,20 @@ import { useState } from "react";
 import FormLabel from "react-bootstrap/esm/FormLabel";
 import { useEffect } from "react";
 function App() {
-  const server = "https://kalenteri-v4.onrender.com";
-  //const server = "http://localhost:3000";
   const [isLoggedIn, setisLoggedIn] = useState(false);
   const [error, setError] = useState(false);
   const [calendars, setCalendars] = useState(false);
   const [addedWorkDays, setAddedWorkDays] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     async function verifyTokens() {
-      const tokenRes = await fetch(`${server}/auth/verify`, {
+      const tokenRes = await fetch(`/auth/verify`, {
         credentials: "include",
       });
       const tokenResData = await tokenRes.json();
       if (tokenResData.success) {
         setisLoggedIn(tokenResData.success);
-        const calendarsRes = await fetch(`${server}/calendar/get-list`);
+        const calendarsRes = await fetch(`/calendar/get-list`);
         if (calendarsRes.ok) {
           const calendarsData = await calendarsRes.json();
           setCalendars(calendarsData);
@@ -38,7 +37,7 @@ function App() {
     verifyTokens();
   }, []);
   async function generateAuthUrl() {
-    const authUrlRes = await fetch(`${server}/auth/generate-auth-url`);
+    const authUrlRes = await fetch(`/auth/generate-auth-url`);
     if (!authUrlRes.ok) {
       setError("Virhe Googlen tunnistautumisessa");
       return;
@@ -61,12 +60,15 @@ function App() {
       return;
     }
     setError(false); // Poistetaan mahdollinen virhe-ilmoitus
-    const formRes = await fetch(`${server}/file/send`, {
+    setIsLoading(true);
+    const formRes = await fetch(`/file/send`, {
       method: "POST",
       body: formData,
     });
     const formResData = await formRes.json();
     setAddedWorkDays(formResData.workDays);
+    setIsLoading(false);
+    e.target.reset();
   }
   function convertMinutesToTime(minutes) {
     const clockHours = Math.floor(minutes / 60);
@@ -128,9 +130,19 @@ function App() {
                 </Form.Select>
               </FormGroup>
               <div className="d-grid pt-3">
-                <Button disabled={!isLoggedIn} type="submit">
-                  Lähetä
-                </Button>
+                {isLoading ? (
+                  <Button
+                    disabled={!isLoggedIn}
+                    type="submit"
+                    className="d-flex justify-content-between"
+                  >
+                    Tallennetaan <div className="loader"></div>
+                  </Button>
+                ) : (
+                  <Button disabled={!isLoggedIn} type="submit">
+                    Lähetä
+                  </Button>
+                )}
               </div>
             </Form>
           </Card.Body>
