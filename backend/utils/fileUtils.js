@@ -10,6 +10,10 @@ async function convertBufferToText(buffer) {
 }
 function convertMinutesToUTC(date, timeMinutes) {
   const [day, month, year] = date.split(".").map(Number);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 10f0a421f6a46fc8a4f574e9efec163f5ade3872
   // Oletetaan, että convertMinutesToTime palauttaa esim. "14:30"
   const [hour, minute] = convertMinutesToTime(timeMinutes)
     .split(":")
