@@ -103,7 +103,7 @@ function findWorkDaysFromText(text) {
         )
         .replace(/(.*)(Matkustus vuorolla \d{3}).*/, "$1 [$2]")
         .replace(/CAR\s\d{3}\s/, "")
-        .replace(/(.*)(\d{3})(.*)(?!.*\d{3})/, "$1[Vuoro : <u>$2</u>]$3")
+        .replace(/(.*)(\d{3})(.*)(?!.*\d{3})/, "$1[Vuoro : $2]$3")
         .replace(/(.*)(Linja-ajoa).*/, "$1 [$2]");
     });
     // console.log(day.rows);
