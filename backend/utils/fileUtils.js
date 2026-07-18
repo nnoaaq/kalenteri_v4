@@ -36,6 +36,9 @@ function convertMinutesToTime(minutes) {
   return `${clockHours}:${clockMinutes}`;
 }
 function calculateMealBreakDuration(row) {
+  if (!row) {
+    return 0;
+  }
   const times = row[0].match(/\d{2}:\d{2}\s-\s\d{2}:\d{2}/g);
   const [start, end] = times[0].split("-");
   return convertTimeToMinutes(end) - convertTimeToMinutes(start);
