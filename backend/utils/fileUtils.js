@@ -8,13 +8,25 @@ async function convertBufferToText(buffer) {
   });
   return text;
 }
-function convertMinutesToUTC(date, timeMinutes) {
-  const [day, month, year] = date.split(".").map(Number);
-  // Oletetaan, että convertMinutesToTime palauttaa esim. "14:30"
-  const [hour, minute] = convertMinutesToTime(timeMinutes)
-    .split(":")
-    .map(Number);
-  return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}T${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}:00`;
+function convertMinutesToUTC(dateStr, timeMinutes) {
+  const [day, month, year] = dateStr.split(".").map(Number);
+
+  // Luodaan Date-olio aloituspäivän klo 00:00 kohdalle
+  // Huom: JS-kuukaudet ovat 0-indexed (0 = tammikuu, 7 = elokuu)
+  const dateObj = new Date(year, month - 1, day, 0, 0, 0);
+
+  // Lisätään minuutit suoraan Date-olioon.
+  // Jos timeMinutes > 1440 (24h), JS siirtää päivämäärää automaattisesti eteenpäin!
+  dateObj.setMinutes(timeMinutes);
+
+  // Muotoillaan paikalliseen muotoon (YYYY-MM-DDTHH:mm:ss)
+  const yyyy = dateObj.getFullYear();
+  const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const dd = String(dateObj.getDate()).padStart(2, "0");
+  const hh = String(dateObj.getHours()).padStart(2, "0");
+  const min = String(dateObj.getMinutes()).padStart(2, "0");
+
+  return `${yyyy}-${mm}-${dd}T${hh}:${min}:00`;
 }
 function convertStartTimeToDate(start) {
   const startDate = new Date(start);
